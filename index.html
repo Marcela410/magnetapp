@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Magnet by Luna - Editor de 9 Imanes</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f8f9fa; margin: 0; padding: 20px; text-align: center; }
+h1 { color: #333; margin-bottom: 5px; }
+p { color: #666; margin-bottom: 20px; }
+.container { max-width: 500px; margin: 0 auto; background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+.grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 20px; }
+.slot { aspect-ratio: 1; border: 2px dashed #ccc; border-radius: 8px; display: flex; align-items: center; justify-content: center; background: #fafafa; overflow: hidden; position: relative; }
+.slot img { width: 100%; height: 100%; object-fit: cover; }
+.slot input { display: none; }
+.slot label { font-size: 24px; color: #aaa; cursor: pointer; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; }
+.customer-info { text-align: left; margin-bottom: 20px; }
+.customer-info label { display: block; font-weight: bold; margin-bottom: 5px; color: #444; }
+.customer-info input { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; margin-bottom: 10px; }
+button { background-color: #28a745; color: white; border: none; padding: 12px 24px; font-size: 16px; font-weight: bold; border-radius: 6px; cursor: pointer; width: 100%; }
+button:disabled { background-color: #ccc; }
+#status { margin-top: 15px; font-weight: bold; color: #007bff; }
+</style>
+</head>
+<body>
+
+<div class="container">
+<h1>Magnet by Luna</h1>
+<p>Selecciona tus 9 fotos para tus imanes de 2x2"</p>
+
+<div class="customer-info">
+<label>Tu Nombre Completo:</label>
+<input type="text" id="clientName" placeholder="Ej: Maria Lopez">
+<label>Número de Pedido / WhatsApp:</label>
+<input type="text" id="orderId" placeholder="Ej: 1001 o Tu Celular">
+</div>
+
+<div class="grid" id="photoGrid"></div>
+
+<button id="uploadBtn" onclick="uploadPhotos()">Enviar Fotos del Pedido</button>
+<div id="status"></div>
+</div>
+
+<script>
+const SUPABASE_URL = "https://btinilisliezlvhawfqy.supabase.co";
+const SUPABASE_KEY = "Sb_publishable_5zgndEqm2oxjG2uFcipPoQ_K9S9t0Wo";
+const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+const grid = document.getElementById('photoGrid');
+const selectedFiles = new Array(9).fill(null);
+
+for (let i = 0; i < 9; i++) {
+const slot = document.createElement('div');
+slot.className = 'slot';
+slot.innerHTML = `
+<label for="file-${i}" id="label-${i}">+</label>
+<input type="file" id="file-${i}" accept="image/*" onchange="previewImage(${i}, event)">
+`;
+grid.appendChild(slot);
+}
+
+function previewImage(index, event) {
+const file = event.target.files[0];
+if (file) {
+selectedFiles[index] = file;
+const reader = new FileReader();
+reader.onload = function(e) {
+const slot = grid.children[index];
+slot.innerHTML = `<img src="${e.target.result}"><input type="file" id="file-${index}" accept="image/*" onchange="previewImage(${index}, event)">`;
+}
+reader.readAsDataURL(file);
+}
+}
+
+async function uploadPhotos() {
+const name = document.getElementById('clientName').value.trim();
+const order = document.getElementById('orderId').value.trim();
+const status = document.getElementById('status');
+
+if (!name || !order) {
+alert('Por favor ingresa tu nombre y número de pedido.');
+return;
+}
+
+const uploadedCount = selectedFiles.filter(f => f !== null).length;
+if (uploadedCount < 9) {
+if (!confirm(`Solo has seleccionado ${uploadedCount} de 9 fotos. ¿Deseas enviarlas así?`)) {
+return;
+}
+}
+
+status.innerText = "Subiendo fotos, por favor espera...";
+document.getElementById('uploadBtn').disabled = true;
+
+try {
+const folderName = `${order}_${name.replace(/\s+/g, '_')}`;
+
+for (let i = 0; i < selectedFiles.length; i++) {
+if (selectedFiles[i]) {
+const file = selectedFiles[i];
+const filePath = `${folderName}/foto_${i+1}_${Date.now()}.jpg`;
+
+const { error } = await supabase.storage
+.from('fotos-imanes')
+.upload(filePath, file);
+
+if (error) throw error;
+}
+}
+
+status.innerText = "¡Fotos subidas con éxito! Muchas gracias por tu pedido.";
+alert("¡Tus fotos han sido recibidas con éxito por Magnet by Luna!");
+} catch (err) {
+console.error(err);
+status.innerText = "Error al subir las fotos. Por favor intenta de nuevo.";
+document.getElementById('uploadBtn').disabled = false;
+}
+}
+</script>
+
+</body>
+</html>

@@ -1,509 +1,280 @@
 !DOCTYPE html>
-
 <html lang="es">
-
 <head>
-
   <meta charset="UTF-8">
-
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
   <title>Magnet by Luna - Pedido de Imanes Personalizados</title>
-
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
   <script src="https://www.paypal.com/sdk/js?client-id=sb&currency=USD"></script>
-
   <style>
-
     :root {
-
       --primary: #4a6fa5;
-
       --accent: #ffb703;
-
       --bg: #f8f9fa;
-
       --text: #333;
-
     }
-
     body {
-
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-
       background-color: var(--bg);
-
       color: var(--text);
-
       margin: 0;
-
       padding: 20px;
-
     }
-
     .container {
-
       max-width: 600px;
-
       margin: 0 auto;
-
       background: #ffffff;
-
       padding: 30px;
-
       border-radius: 12px;
-
       box-shadow: 0 4px 15px rgba(0,0,0,0.08);
-
     }
-
     h1 {
-
       text-align: center;
-
       color: var(--primary);
-
       margin-bottom: 5px;
-
     }
-
     p.subtitle {
-
       text-align: center;
-
       color: #666;
-
       margin-bottom: 25px;
-
       font-size: 0.95rem;
-
     }
-
     .form-group {
-
       margin-bottom: 18px;
-
     }
-
     label {
-
       display: block;
-
       margin-bottom: 6px;
-
       font-weight: 600;
-
       font-size: 0.9rem;
-
     }
-
     input[type="text"], input[type="tel"], input[type="email"] {
-
       width: 100%;
-
       padding: 10px 12px;
-
       border: 1px solid #ccc;
-
       border-radius: 6px;
-
       box-sizing: border-box;
-
       font-size: 0.95rem;
-
     }
-
-    .photo-grid {
-
-      display: grid;
-
-      grid-template-columns: repeat(3, 1fr);
-
-      gap: 10px;
-
-      margin-top: 15px;
-
-    }
-
-    .photo-box {
-
-      aspect-ratio: 1;
-
-      border: 2px dashed #bbb;
-
+    .bulk-upload-btn {
+      display: block;
+      width: 100%;
+      padding: 12px;
+      background-color: var(--primary);
+      color: white;
+      text-align: center;
+      font-weight: bold;
       border-radius: 8px;
-
-      display: flex;
-
-      align-items: center;
-
-      justify-content: center;
-
-      position: relative;
-
-      background-color: #fafafa;
-
       cursor: pointer;
-
-      overflow: hidden;
-
-    }
-
-    .photo-box img {
-
-      width: 100%;
-
-      height: 100%;
-
-      object-fit: cover;
-
-    }
-
-    .photo-box input[type="file"] {
-
-      position: absolute;
-
-      width: 100%;
-
-      height: 100%;
-
-      opacity: 0;
-
-      cursor: pointer;
-
-    }
-
-    .photo-box span {
-
-      font-size: 0.8rem;
-
-      color: #888;
-
-      text-align: center;
-
-    }
-
-    .paypal-section {
-
-      margin-top: 30px;
-
-      border-top: 1px solid #eee;
-
-      padding-top: 20px;
-
-    }
-
-    .price-tag {
-
-      text-align: center;
-
-      font-size: 1.2rem;
-
-      font-weight: bold;
-
       margin-bottom: 15px;
-
-      color: #2c3e50;
-
+      box-sizing: border-box;
     }
-
-    #status-msg {
-
-      text-align: center;
-
+    .photo-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
       margin-top: 15px;
-
-      font-weight: bold;
-
-      color: #28a745;
-
     }
-
+    .photo-box {
+      aspect-ratio: 1;
+      border: 2px dashed #bbb;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      background-color: #fafafa;
+      cursor: pointer;
+      overflow: hidden;
+    }
+    .photo-box img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    .photo-box input[type="file"] {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      opacity: 0;
+      cursor: pointer;
+    }
+    .photo-box span {
+      font-size: 0.8rem;
+      color: #888;
+      text-align: center;
+    }
+    .paypal-section {
+      margin-top: 30px;
+      border-top: 1px solid #eee;
+      padding-top: 20px;
+    }
+    .price-tag {
+      text-align: center;
+      font-size: 1.2rem;
+      font-weight: bold;
+      margin-bottom: 15px;
+      color: #2c3e50;
+    }
+    #status-msg {
+      text-align: center;
+      margin-top: 15px;
+      font-weight: bold;
+      color: #28a745;
+    }
   </style>
-
 </head>
-
 <body>
 
-
-
 <div class="container">
-
   <h1>Magnet by Luna</h1>
-
   <p class="subtitle">Set de 9 Imanes Personalizados (2x2 pulgadas) - $29.99</p>
 
-
-
   <form id="orderForm">
-
     <div class="form-group">
-
       <label for="fullName">Nombre Completo *</label>
-
       <input type="text" id="fullName" required placeholder="Ej. Maria Lopez">
-
     </div>
 
-
-
     <div class="form-group">
-
       <label for="phone">Teléfono / WhatsApp *</label>
-
       <input type="tel" id="phone" required placeholder="(305) 000-0000">
-
     </div>
-
-
 
     <div class="form-group">
-
       <label for="address">Dirección de Envío (Calle y Apto/Apt) *</label>
-
       <input type="text" id="address" required placeholder="123 Main St, Apt 4B">
-
     </div>
-
-
 
     <div style="display: flex; gap: 10px;">
-
       <div class="form-group" style="flex: 2;">
-
         <label for="city">Ciudad *</label>
-
         <input type="text" id="city" required placeholder="Miami">
-
       </div>
-
       <div class="form-group" style="flex: 1;">
-
         <label for="state">Estado *</label>
-
         <input type="text" id="state" required placeholder="FL">
-
       </div>
-
       <div class="form-group" style="flex: 1;">
-
         <label for="zip">Zip Code *</label>
-
         <input type="text" id="zip" required placeholder="33025">
-
       </div>
-
     </div>
-
-
 
     <div class="form-group">
+      <label>Sube tus 9 fotos:</label>
 
-      <label>Sube tus 9 fotos (Haz clic en cada cuadro):</label>
+      <!-- Botón para selección múltiple -->
+      <label for="bulkInput" class="bulk-upload-btn">📸 Seleccionar las 9 fotos juntas</label>
+      <input type="file" id="bulkInput" accept="image/*" multiple style="display: none;" onchange="handleMultipleFiles(this)">
 
-      <div class="photo-grid" id="photoGrid">
-
-        <script>
-
-          for (let i = 1; i <= 9; i++) {
-
-            document.write(`
-
-              <div class="photo-box">
-
-                <span>Foto ${i}</span>
-
-                <input type="file" accept="image/*" class="photo-input" data-index="${i}" onchange="previewImage(this)">
-
-              </div>
-
-            `);
-
-          }
-
-        </script>
-
-      </div>
-
-    </div>
-
-
-
-    <div class="paypal-section">
-
-      <div class="price-tag">Total a pagar: $29.99 USD</div>
-
-      <p style="text-align: center; font-size: 0.85rem; color: #666; margin-bottom: 15px;">
-
-        Completa tus datos y selecciona tus 9 fotos antes de realizar el pago.
-
+      <p style="font-size: 0.8rem; color: #666; text-align: center; margin-top: -5px;">
+        O haz clic en cada cuadro si prefieres subirlas una por una:
       </p>
 
-      <div id="paypal-button-container"></div>
-
+      <div class="photo-grid" id="photoGrid">
+        <script>
+          for (let i = 1; i <= 9; i++) {
+            document.write(`
+              <div class="photo-box" id="box-${i}">
+                <span>Foto ${i}</span>
+                <input type="file" accept="image/*" class="photo-input" data-index="${i}" onchange="previewSingleImage(this)">
+              </div>
+            `);
+          }
+        </script>
+      </div>
     </div>
 
+    <div class="paypal-section">
+      <div class="price-tag">Total a pagar: $29.99 USD</div>
+      <p style="text-align: center; font-size: 0.85rem; color: #666; margin-bottom: 15px;">
+        Completa tus datos y selecciona tus 9 fotos antes de realizar el pago.
+      </p>
+      <div id="paypal-button-container"></div>
+    </div>
   </form>
 
-
-
   <div id="status-msg"></div>
-
 </div>
 
-
-
 <script>
-
-  function previewImage(input) {
-
-    if (input.files && input.files[0]) {
-
-      const reader = new FileReader();
-
-      const parent = input.parentElement;
-
-      reader.onload = function(e) {
-
-        let img = parent.querySelector('img');
-
-        if (!img) {
-
-          img = document.createElement('img');
-
-          parent.appendChild(img);
-
-        }
-
-        img.src = e.target.result;
-
-        let span = parent.querySelector('span');
-
-        if (span) span.style.display = 'none';
-
+  function renderPhoto(parent, file) {
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      let img = parent.querySelector('img');
+      if (!img) {
+        img = document.createElement('img');
+        parent.appendChild(img);
       }
-
-      reader.readAsDataURL(input.files[0]);
-
+      img.src = e.target.result;
+      let span = parent.querySelector('span');
+      if (span) span.style.display = 'none';
     }
-
+    reader.readAsDataURL(file);
   }
 
+  function previewSingleImage(input) {
+    if (input.files && input.files[0]) {
+      renderPhoto(input.parentElement, input.files[0]);
+    }
+  }
 
+  function handleMultipleFiles(input) {
+    if (input.files && input.files.length > 0) {
+      const files = Array.from(input.files).slice(0, 9);
+      files.forEach((file, index) => {
+        const boxIndex = index + 1;
+        const parent = document.getElementById(`box-${boxIndex}`);
+        const singleInput = parent.querySelector('.photo-input');
+
+        const dt = new DataTransfer();
+        dt.items.add(file);
+        singleInput.files = dt.files;
+
+        renderPhoto(parent, file);
+      });
+    }
+  }
 
   paypal.Buttons({
-
     createOrder: function(data, actions) {
-
       const name = document.getElementById('fullName').value;
-
       const phone = document.getElementById('phone').value;
-
       const address = document.getElementById('address').value;
-
       const city = document.getElementById('city').value;
-
-      
-
+     
       const files = document.querySelectorAll('.photo-input');
-
       let count = 0;
-
-      files.forEach(f => { if(f.files.length > 0) count++; });
-
-
+      files.forEach(f => { if(f.files && f.files.length > 0) count++; });
 
       if (!name || !phone || !address || !city) {
-
         alert("Por favor completa todos los datos de envío antes de pagar.");
-
         return false;
-
       }
-
-
 
       if (count < 9) {
-
         alert("Por favor selecciona las 9 fotos para tus imanes antes de pagar.");
-
         return false;
-
       }
 
-
-
       return actions.order.create({
-
         purchase_units: [{
-
           amount: { value: '29.99' },
-
           description: 'Set de 9 Imanes Personalizados 2x2 - Magnet by Luna',
-
           payee: { email_address: 'imanesfamilialuna@gmail.com' }
-
         }]
-
       });
-
     },
-
     onApprove: function(data, actions) {
-
       return actions.order.capture().then(function(details) {
-
         document.getElementById('status-msg').innerText = "¡Pago exitoso! Subiendo tus fotos, por favor no cierres la página...";
-
         setTimeout(() => {
-
           document.getElementById('status-msg').innerText = "¡Pedido y Pago recibidos con éxito! Muchas gracias por tu compra en Magnet by Luna.";
-
         }, 3000);
-
       });
-
     }
-
   }).render('#paypal-button-container');
-
 </script>
 
-
-
 </body>
-    
-  
-     
-
-   
-     
-  
- 
-
-  
-
-
-
-  
-
-
-
-
-
-     
-     
-
-
-
-
-    
-
-
-
- 
-</body>
-
-
-
